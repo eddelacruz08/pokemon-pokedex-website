@@ -8,8 +8,11 @@ import PokemonDetails from '@/components/PokemonDetails';
 import PokemonHeader from '@/components/PokemonHeader';
 import PokemonFooter from '@/components/PokemonFooter';
 
-import { useDarkMode } from '@/lib/useDarkMode';
 import { getPokemonList, getPokemonDetails } from '@/lib/api';
+
+import clsx from 'clsx';
+
+import styles from '@/components/PokemonMain/PokemonMain.module.css';
 
 const PokemonMain: React.FC = () => {
   const [filteredPokemon, setFilteredPokemon] = useState<string[]>([]);
@@ -23,20 +26,24 @@ const PokemonMain: React.FC = () => {
   const [nickname, setNickname] = useState<string>('');
   const [date, setDate] = useState<string>('');
   const [filter, setFilter] = useState<'all' | 'captured'>('all');
-  const [displayCount, setDisplayCount] = useState<number>(20);
-  const [hasMore, setHasMore] = useState<boolean>(true);
 
-  const { darkMode } = useDarkMode();
+  // Pagination state
+  const [page, setPage] = useState<number>(1);
+  const limit = 18;
 
-  // Fetch Pokémon list using Tanstack Query
-  const { data: pokemon = [], isLoading } = useQuery({
+  // Fetch Pokemon list using Tanstack Query
+  const {
+    data: pokemon = [],
+    isLoading,
+    error,
+  } = useQuery<any>({
     queryKey: ['pokemonList'],
     queryFn: getPokemonList,
   });
 
-  useEffect(() => {
-    setFilteredPokemon(pokemon.slice(0, displayCount));
-  }, [pokemon, displayCount]);
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
 
   useEffect(() => {
     let results = pokemon.filter((p: any) =>
@@ -47,8 +54,10 @@ const PokemonMain: React.FC = () => {
       results = results.filter((p: any) => capturedPokemon[p.name]);
     }
 
-    setFilteredPokemon(results.slice(0, displayCount));
-  }, [searchTerm, pokemon, filter, displayCount, capturedPokemon]);
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    setFilteredPokemon(results.slice(startIndex, endIndex));
+  }, [searchTerm, pokemon, filter, page, capturedPokemon]);
 
   useEffect(() => {
     const storedCaptured = localStorage.getItem('capturedPokemon');
@@ -56,8 +65,6 @@ const PokemonMain: React.FC = () => {
       setCapturedPokemon(JSON.parse(storedCaptured));
     }
   }, []);
-
-  // Fetch Pokémon details using Tanstack Query
   const fetchPokemonDetails = async (name: string) => {
     const details = await getPokemonDetails(name);
     setPokemonDetails({
@@ -105,57 +112,47 @@ const PokemonMain: React.FC = () => {
     }
   };
 
-  const loadMore = () => {
-    if (pokemon.length > displayCount) {
-      setDisplayCount(displayCount + 20);
-    } else {
-      setHasMore(false);
-    }
-  };
+  if (isLoading)
+    return (
+      <div className={clsx(styles.isLoading)}>
+        <img alt="pokemon" src="pokemon-23.svg" className="h-32" />
+        <p>Loading...</p>
+      </div>
+    );
 
-  if (isLoading) return <div>Loading...</div>;
+  const totalPages = Math.ceil(pokemon.length / limit);
 
   return (
-    <div className="mb-20 p-4">
+    <div className={clsx(styles.main)}>
       <PokemonHeader
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         setView={setView}
         view={view}
       />
-      <div
-        className={`grid gap-4 ${
-          view === 'grid' ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6' : ''
-        }`}
-      >
-        {filteredPokemon.map((p: any) => (
-          <PokemonCard
-            key={p.name}
-            name={p.name}
-            url={p.url}
-            view={view}
-            onCapture={() => handleCapture(p.name)}
-            isCaptured={!!capturedPokemon[p.name]}
-            onViewDetails={() => handleViewDetails(p.name)}
-          />
-        ))}
-        {hasMore && (
-          <div
-            className={`rounded-lg border p-4 shadow-md ${view === 'list' ? 'flex flex-row items-center justify-center gap-4' : 'flex w-full flex-col items-center justify-center gap-4'} `}
-          >
-            <div className="flex justify-center">
-              <button
-                className="dark: rounded-md px-4 py-2 italic hover:bg-gray-500 hover:text-white"
-                onClick={loadMore}
-              >
-                Load more . . .
-              </button>
-            </div>
-          </div>
-        )}
+      <div className={clsx(styles.pokemonCard, view === 'grid' ? styles.grid : '')}>
+        {filteredPokemon.map((p: any) => {
+          return (
+            <PokemonCard
+              key={p.name}
+              name={p.name}
+              imageUrl={p.images}
+              view={view}
+              onCapture={() => handleCapture(p.name)}
+              isCaptured={!!capturedPokemon[p.name]}
+              onViewDetails={() => handleViewDetails(p.name)}
+            />
+          );
+        })}
       </div>
 
-      <PokemonFooter filter={filter} setFilter={setFilter} />
+      <PokemonFooter
+        filter={filter}
+        setFilter={setFilter}
+        handlePageChange={handlePageChange}
+        page={page}
+        totalPages={totalPages}
+      />
 
       {selectedPokemon && (
         <PokemonDetails

@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
+import SuccessModal from '@/components/SuccessModal';
+
+import clsx from 'clsx';
 
 import { PokemonDetailProps, PokemonDetailValidation } from '@/app/constants';
-import { useDarkMode } from '@/lib/useDarkMode';
-import SuccessModal from '@/components/SuccessModal';
+
+import styles from '@/components/PokemonDetails/PokemonDetails.module.css';
 
 const PokemonDetails: React.FC<PokemonDetailProps> = ({
   pokemonDetails,
@@ -16,11 +19,10 @@ const PokemonDetails: React.FC<PokemonDetailProps> = ({
   setSelectedPokemon,
   removeCapture,
 }) => {
-  const { darkMode } = useDarkMode();
-  const textColor = darkMode ? 'text-white' : 'text-black';
-
   const [errors, setErrors] = useState<PokemonDetailValidation>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const imageUrl = `https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/other/dream-world/${pokemonDetails?.id}.svg`;
 
   const validateInputs = () => {
     const newErrors: PokemonDetailValidation = {};
@@ -60,72 +62,71 @@ const PokemonDetails: React.FC<PokemonDetailProps> = ({
     <>
       {successMessage && <SuccessModal message={successMessage} />}
 
-      <div className="fixed bottom-0 left-0 right-0 top-0 flex items-center justify-center bg-gray-800 bg-opacity-75 p-4">
+      <div className={clsx(styles.details)}>
         <div
-          className={`w-full max-w-md rounded-md ${pokemonDetails?.isCaptured ? 'border border-green-500' : 'border border-white'} ${darkMode ? 'bg-gray-800' : 'bg-white'} p-6 shadow-lg`}
+          className={clsx(
+            styles.detailsCard,
+            pokemonDetails?.isCaptured
+              ? 'bg-gradient-to-b from-green-600 to-yellow-200 dark:from-green-700 dark:to-yellow-200'
+              : 'bg-gradient-to-b from-gray-600 to-yellow-200 dark:bg-gray-700 dark:to-yellow-200',
+          )}
         >
-          <div className="flex flex-row items-center justify-between">
-            <h2 className={`mb-4 text-center text-xl font-bold ${textColor}`}>
-              {pokemonDetails?.isCaptured ? 'Captured' : 'Tag Pokemon as Captured'}
-            </h2>
+          <div className={clsx(styles.detailsTitle)}>
+            <h2>{pokemonDetails?.isCaptured ? 'Captured' : 'Tag Pokemon as Captured'}</h2>
             <CloseIcon
-              className={`cursor-pointer ${textColor}`}
+              className={'dark:text-yellow-500'}
               onClick={() => setSelectedPokemon(null)}
             />
           </div>
           {pokemonDetails && (
-            <div className={`mb-4 ${textColor}`}>
-              <img
-                src={pokemonDetails.sprites.front_default}
-                alt={pokemonDetails.name}
-                className="mx-auto mb-2 rounded-lg border shadow-md"
-              />
-              <h3 className="text-transform: text-center text-lg font-semibold capitalize">
-                {pokemonDetails.name}
-              </h3>
+            <div className={clsx(styles.detailsBody, `dark:text-gray-800`)}>
+              <img src={imageUrl} alt={pokemonDetails.name} />
+              <h3>{pokemonDetails.name}</h3>
               {pokemonDetails?.isCaptured && (
-                <>
+                <div className="align-center flex flex-row justify-center gap-4">
                   <p>
-                    <strong>Nickname:</strong> {pokemonDetails?.capturedDetails?.nickname}
+                    <strong>Nickname:</strong> {pokemonDetails?.capturedDetails?.nickname || 'N/A'}
                   </p>
                   <p>
-                    <strong>When:</strong> {pokemonDetails?.capturedDetails?.when}
+                    <strong>When:</strong> {pokemonDetails?.capturedDetails?.when || 'N/A'}
                   </p>
-                </>
+                </div>
               )}
-              <p>
+              <div className="align-center flex flex-row justify-center gap-4">
+                <p>
+                  <strong>Height:</strong> {pokemonDetails.height / 10} m
+                </p>
+                <p>
+                  <strong>Weight:</strong> {pokemonDetails.weight / 10} kg
+                </p>
+              </div>
+              <p className="text-center">
                 <strong>Type:</strong>{' '}
                 {pokemonDetails.types.map((type: any) => type.type.name).join(', ')}
-              </p>
-              <p>
-                <strong>Height:</strong> {pokemonDetails.height / 10} m
-              </p>
-              <p>
-                <strong>Weight:</strong> {pokemonDetails.weight / 10} kg
               </p>
             </div>
           )}
           {!pokemonDetails?.isCaptured ? (
             <>
-              <p className={`mb-2 capitalize ${textColor}`}>Selected Pokémon: {selectedPokemon}</p>
+              <p className={`dark:text-gray-800`}>Selected Pokemon: {selectedPokemon}</p>
               <input
                 type="text"
                 placeholder="Nickname"
-                className={`mb-2 w-full rounded-md border p-2 text-black`}
+                className={`dark:bg-gray-600 dark:text-white`}
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
               />
-              {errors.nickname && <p className="text-sm text-red-500">{errors.nickname}</p>}
+              {errors.nickname && <p className={clsx(styles.error)}>{errors.nickname}</p>}
               <input
                 type="date"
-                className={`mb-2 w-full rounded-md border p-2 text-black`}
+                className={`dark:bg-gray-600 dark:text-white`}
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
               />
-              {errors.date && <p className="text-sm text-red-500">{errors.date}</p>}
-              <div className="flex justify-end">
+              {errors.date && <p className={clsx(styles.error)}>{errors.date}</p>}
+              <div className={clsx(styles.detailsCardDiv)}>
                 <button
-                  className={`rounded-md bg-blue-500 px-4 py-2 text-white`}
+                  className={clsx(styles.detailsCardButtonIsCaptured)}
                   onClick={handleSaveCapture}
                 >
                   Tag as Captured
@@ -133,12 +134,12 @@ const PokemonDetails: React.FC<PokemonDetailProps> = ({
               </div>
             </>
           ) : (
-            <div className="flex justify-end">
+            <div className={clsx(styles.detailsCardDiv)}>
               <button
-                className={`rounded-md bg-red-500 px-4 py-2 text-white`}
+                className={clsx(styles.detailsCardButtonIsNotCaptured)}
                 onClick={handleRemoveCapture}
               >
-                Remove Captured
+                Remove
               </button>
             </div>
           )}

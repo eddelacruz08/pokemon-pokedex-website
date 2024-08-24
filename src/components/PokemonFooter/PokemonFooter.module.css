@@ -1,0 +1,80 @@
+.pagination {
+  margin-top: 1rem /* 16px */;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow:
+    0px 155px 62px rgba(0, 0, 0, 0.01),
+    0px 87px 52px rgba(0, 0, 0, 0.05),
+    0px 39px 39px rgba(0, 0, 0, 0.09),
+    0px 10px 21px rgba(0, 0, 0, 0.1),
+    0px 0px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 23px;
+}
+
+.paginationButton {
+  padding-left: 1rem /* 16px */;
+  padding-right: 1rem /* 16px */;
+  padding-top: 0.5rem /* 8px */;
+  padding-bottom: 0.5rem /* 8px */;
+  font-style: italic;
+  border-radius: 23px;
+  cursor: pointer;
+  background-color: rgb(254 240 138) /* #fef08a */;
+  color: rgb(31 41 55) /* #1f2937 */;
+}
+
+.paginationButton:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(234 179 8 / var(--tw-bg-opacity)) /* #eab308 */;
+}
+
+.paginationButton svg {
+  font-weight: 900;
+}
+
+.card {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  display: flex;
+  justify-content: space-evenly;
+  border-top-width: 2px;
+  --tw-border-opacity: 1;
+  --tw-bg-opacity: 1;
+  border-color: rgb(234 179 8 / var(--tw-border-opacity)) /* #eab308 */;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity)) /* #ffffff */;
+  padding: 1rem /* 16px */;
+}
+
+.card button {
+  border-radius: 0.375rem /* 6px */;
+  padding-left: 1rem /* 16px */;
+  padding-right: 1rem /* 16px */;
+  padding-top: 0.5rem /* 8px */;
+  padding-bottom: 0.5rem /* 8px */;
+  box-shadow:
+    0px 155px 62px rgba(0, 0, 0, 0.01),
+    0px 87px 52px rgba(0, 0, 0, 0.05),
+    0px 39px 39px rgba(0, 0, 0, 0.09),
+    0px 10px 21px rgba(0, 0, 0, 0.1),
+    0px 0px 0px rgba(0, 0, 0, 0.1);
+  transition-duration: 150ms;
+  font-weight: 600;
+}
+
+.all {
+  background-color: rgb(234 179 8) /* #eab308 */;
+  color: rgb(31 41 55) /* #1f2937 */;
+}
+
+.captured {
+  background-color: rgb(254 240 138) /* #fef08a */;
+  color: rgb(31 41 55) /* #1f2937 */;
+}
+
+.captured:hover {
+  background-color: rgb(234 179 8) /* #eab308 */;
+  color: rgb(31 41 55) /* #1f2937 */;
+}

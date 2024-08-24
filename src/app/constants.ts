@@ -1,6 +1,35 @@
+export type ResultResponse = { name: string; url: string };
+
+export type SpeciesResponseProps = { data: { color: { name: string }; id: number } };
+
+export type PokemonDetailResponse = {
+  data: {
+    name: string;
+    id: number;
+    sprites: {
+      front_default: string;
+    };
+    types: string[];
+    height: number;
+    weight: number;
+    isCaptured: boolean;
+    capturedDetails: {
+      nickname: string;
+      when: string;
+    };
+  };
+};
+
+export type PokemonListProps = {
+  data: {
+    results: ResultResponse[];
+  };
+};
+
 export type PokemonDetailProps = {
   pokemonDetails: {
     name: string;
+    id: number;
     sprites: {
       front_default: string;
     };
@@ -25,7 +54,7 @@ export type PokemonDetailProps = {
 
 export type PokemonCardProps = {
   name: string;
-  url: string;
+  imageUrl: string;
   view: 'list' | 'grid';
   onCapture: () => void;
   isCaptured: boolean;
@@ -47,4 +76,7 @@ export type PokemonHeaderProps = {
 export type PokemonFooterProps = {
   filter: string;
   setFilter: (v: any) => void;
+  handlePageChange: (v: any) => void;
+  page: number;
+  totalPages: number;
 };

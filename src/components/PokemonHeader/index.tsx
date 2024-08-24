@@ -5,6 +5,10 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import AppsIcon from '@mui/icons-material/Apps';
 import { PokemonHeaderProps } from '@/app/constants';
 
+import clsx from 'clsx';
+
+import styles from '@/components/PokemonHeader/PokemonHeader.module.css';
+
 const PokemonHeader: React.FC<PokemonHeaderProps> = ({
   searchTerm,
   setSearchTerm,
@@ -13,35 +17,43 @@ const PokemonHeader: React.FC<PokemonHeaderProps> = ({
 }) => {
   return (
     <>
-      <div className="mb-4 flex flex-col items-center justify-center md:flex-row">
-        <h1 className="mb-2 p-2 text-2xl font-bold md:mb-0 md:w-1/4">Gen 1 Pokedex</h1>
+      <div className={clsx(styles.titleImage)}>
+        <img alt="pokemon" src="pokemon-23.svg" className="h-32" />
       </div>
-      <div className="mb-4 flex flex-col items-center justify-between md:flex-row">
+      <div className={clsx(styles.title)}>
+        <img
+          src={'/pokeball.png'}
+          alt={'Pokemon Ball'}
+          className={clsx(styles.icon, 'dark:text-white')}
+        />
+        <p>Gen 1 Pokedex</p>
+      </div>
+      <div className={clsx(styles.body)}>
         <input
           type="text"
           placeholder="Search Pokemon..."
-          className="mb-2 rounded-md border border-gray-500 p-2 text-black dark:bg-gray-800 dark:text-white md:mb-0 md:w-1/4"
+          className="dark:bg-gray-800 dark:text-white"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <div className="flex space-x-2">
+        <div>
           <button
             onClick={() => setView('list')}
-            className={`rounded-md border bg-gray-200 px-4 py-2 ${
+            className={`${
               view === 'list'
                 ? 'text-gray-800 dark:bg-gray-500 dark:text-white'
                 : 'text-gray-500 dark:bg-gray-800 dark:text-white'
-            } transition-colors`}
+            }`}
           >
             <FormatListBulletedIcon />
           </button>
           <button
             onClick={() => setView('grid')}
-            className={`rounded-md border bg-gray-200 px-4 py-2 ${
+            className={`${
               view === 'grid'
                 ? 'text-gray-800 dark:bg-gray-500 dark:text-white'
                 : 'text-gray-500 dark:bg-gray-800 dark:text-white'
-            } transition-colors`}
+            }`}
           >
             <AppsIcon />
           </button>
