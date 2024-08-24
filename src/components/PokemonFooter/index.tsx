@@ -41,13 +41,19 @@ const PokemonFooter: React.FC<PokemonFooterProps> = ({
       <div className={clsx(styles.card, 'dark:bg-gray-800')}>
         <button
           className={clsx(filter === 'all' ? styles.all : styles.captured)}
-          onClick={() => setFilter('all')}
+          onClick={() => {
+            setFilter('all');
+            handlePageChange(1);
+          }}
         >
           All
         </button>
         <button
           className={clsx(filter === 'captured' ? styles.all : styles.captured)}
-          onClick={() => setFilter('captured')}
+          onClick={() => {
+            setFilter('captured');
+            handlePageChange(1);
+          }}
         >
           <CatchingPokemonOutlinedIcon />
           &nbsp;Captured

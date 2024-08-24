@@ -7,6 +7,7 @@ import PokemonCard from '@/components/PokemonCard';
 import PokemonDetails from '@/components/PokemonDetails';
 import PokemonHeader from '@/components/PokemonHeader';
 import PokemonFooter from '@/components/PokemonFooter';
+import LoadingScreen from '@/components/LoadingScreen';
 
 import { getPokemonList, getPokemonDetails } from '@/lib/api';
 
@@ -26,17 +27,14 @@ const PokemonMain: React.FC = () => {
   const [nickname, setNickname] = useState<string>('');
   const [date, setDate] = useState<string>('');
   const [filter, setFilter] = useState<'all' | 'captured'>('all');
+  const [hasMore, setHasMore] = useState<boolean>(true);
 
   // Pagination state
   const [page, setPage] = useState<number>(1);
   const limit = 18;
 
   // Fetch Pokemon list using Tanstack Query
-  const {
-    data: pokemon = [],
-    isLoading,
-    error,
-  } = useQuery<any>({
+  const { data: pokemon = [], isLoading } = useQuery<any>({
     queryKey: ['pokemonList'],
     queryFn: getPokemonList,
   });
@@ -65,6 +63,7 @@ const PokemonMain: React.FC = () => {
       setCapturedPokemon(JSON.parse(storedCaptured));
     }
   }, []);
+
   const fetchPokemonDetails = async (name: string) => {
     const details = await getPokemonDetails(name);
     setPokemonDetails({
@@ -73,6 +72,10 @@ const PokemonMain: React.FC = () => {
       capturedDetails: capturedPokemon[name],
     });
   };
+
+  const totalPages = Math.ceil(
+    filter === 'all' ? pokemon.length / limit : Object.keys(capturedPokemon).length / limit,
+  );
 
   const handleCapture = async (name: string) => {
     setSelectedPokemon(name);
@@ -112,15 +115,7 @@ const PokemonMain: React.FC = () => {
     }
   };
 
-  if (isLoading)
-    return (
-      <div className={clsx(styles.isLoading)}>
-        <img alt="pokemon" src="pokemon-23.svg" className="h-32" />
-        <p>Loading...</p>
-      </div>
-    );
-
-  const totalPages = Math.ceil(pokemon.length / limit);
+  if (isLoading) return <LoadingScreen />;
 
   return (
     <div className={clsx(styles.main)}>
@@ -130,21 +125,25 @@ const PokemonMain: React.FC = () => {
         setView={setView}
         view={view}
       />
-      <div className={clsx(styles.pokemonCard, view === 'grid' ? styles.grid : '')}>
-        {filteredPokemon.map((p: any) => {
-          return (
-            <PokemonCard
-              key={p.name}
-              name={p.name}
-              imageUrl={p.images}
-              view={view}
-              onCapture={() => handleCapture(p.name)}
-              isCaptured={!!capturedPokemon[p.name]}
-              onViewDetails={() => handleViewDetails(p.name)}
-            />
-          );
-        })}
-      </div>
+      {filteredPokemon.length !== 0 ? (
+        <div className={clsx(styles.pokemonCard, view === 'grid' ? styles.grid : '')}>
+          {filteredPokemon.map((p: any) => {
+            return (
+              <PokemonCard
+                key={p.name}
+                name={p.name}
+                imageUrl={p.images}
+                view={view}
+                onCapture={() => handleCapture(p.name)}
+                isCaptured={!!capturedPokemon[p.name]}
+                onViewDetails={() => handleViewDetails(p.name)}
+              />
+            );
+          })}
+        </div>
+      ) : (
+        <div className={clsx('text-center')}>No Pokemon Data</div>
+      )}
 
       <PokemonFooter
         filter={filter}

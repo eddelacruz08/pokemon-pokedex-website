@@ -33,42 +33,44 @@ const PokemonCard: React.FC<PokemonCardProps> = ({
         alt={name}
         className={clsx(view === 'list' ? styles.cardImageList : styles.cardImageGrid)}
       />
-      <h3
-        className={clsx(
-          'dark:text-white',
-          view === 'list' ? styles.cardNameList : styles.cardNameGrid,
-        )}
-      >
-        {name}
-      </h3>
-
-      {!isCaptured ? (
-        <button
+      <div>
+        <h3
           className={clsx(
-            styles.cardButton,
-            isCaptured ? styles.cardButtonIsCaptured : styles.cardButtonIsNotCaptured,
+            'dark:text-white',
+            view === 'list' ? styles.cardNameList : styles.cardNameGrid,
           )}
-          onClick={onCapture}
-          disabled={isCaptured}
         >
+          {name}
+        </h3>
+
+        {!isCaptured ? (
+          <button
+            className={clsx(
+              styles.cardButton,
+              isCaptured ? styles.cardButtonIsCaptured : styles.cardButtonIsNotCaptured,
+            )}
+            onClick={onCapture}
+            disabled={isCaptured}
+          >
+            <Box display="flex" justifyContent="center" alignItems="center">
+              <img
+                src={'/lock.png'}
+                alt={'Pokemon Ball'}
+                className={clsx(styles.icon, 'dark:text-white')}
+              />
+              &nbsp; <p>Tag as Captured</p>
+            </Box>
+          </button>
+        ) : (
           <Box display="flex" justifyContent="center" alignItems="center">
             <img
-              src={'/lock.png'}
+              src={'/pokeball.png'}
               alt={'Pokemon Ball'}
               className={clsx(styles.icon, 'dark:text-white')}
             />
-            &nbsp; <p>Tag as Captured</p>
           </Box>
-        </button>
-      ) : (
-        <Box display="flex" justifyContent="center" alignItems="center">
-          <img
-            src={'/pokeball.png'}
-            alt={'Pokemon Ball'}
-            className={clsx(styles.icon, 'dark:text-white')}
-          />
-        </Box>
-      )}
+        )}
+      </div>
     </div>
   );
 };

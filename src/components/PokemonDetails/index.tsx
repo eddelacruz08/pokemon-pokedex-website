@@ -108,7 +108,7 @@ const PokemonDetails: React.FC<PokemonDetailProps> = ({
           )}
           {!pokemonDetails?.isCaptured ? (
             <>
-              <p className={`dark:text-gray-800`}>Selected Pokemon: {selectedPokemon}</p>
+              <p className={`font-bold dark:text-gray-800`}>Selected Pokemon: {selectedPokemon}</p>
               <input
                 type="text"
                 placeholder="Nickname"
