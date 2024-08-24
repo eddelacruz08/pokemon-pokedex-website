@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import HomePage from '@/app/HomePage/page';
+import HomePage from '@/app/homepage/page';
 
 export default function Home() {
   const [isClient, setIsClient] = useState(false);

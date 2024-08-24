@@ -1,3 +1,5 @@
+'use client';
+
 import PokemonMain from '@/components/PokemonMain';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
