@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import HomePage from '@/app/homepage/page';
+import Pokedex from '@/app/pokedex/page';
 
 export default function Home() {
   const [isClient, setIsClient] = useState(false);
@@ -20,7 +20,7 @@ export default function Home() {
       <div className="flex min-h-screen flex-col">
         <main className="flex-1">
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/pokedex" element={<Pokedex />} />
           </Routes>
         </main>
       </div>

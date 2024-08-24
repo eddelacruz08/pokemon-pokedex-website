@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
 
-const HomePage: React.FC = () => {
+const Pokedex: React.FC = () => {
   return (
     <>
       <div className="container mx-auto p-4">
@@ -17,4 +17,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage;
+export default Pokedex;
