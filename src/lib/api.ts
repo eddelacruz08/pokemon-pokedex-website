@@ -8,26 +8,24 @@ import {
 } from '@/app/constants';
 
 // Fetch a list of Pokemon with a limit and offset
-export const getPokemonList = async () => {
+export const getPokemonList = async (limit: number, offset: number) => {
   try {
-    const response: PokemonListProps = await client.get(`/v2/pokemon/?limit=150&offset=??`);
+    const response: PokemonListProps = await client.get(`/v2/pokemon/?limit=${limit}&offset=??`);
     const pokemonList = response.data.results;
 
-    const pokemonWithColors = await Promise.all(
+    const pokemonWithImages = await Promise.all(
       pokemonList.map(async (pokemon: ResultResponse) => {
         const speciesUrl = pokemon.url.replace('/pokemon/', '/pokemon-species/');
         const speciesResponse: SpeciesResponseProps = await client.get(speciesUrl);
-        const color = speciesResponse.data.color.name;
-        const images = `https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/other/dream-world/${speciesResponse.data.id}.svg`;
+        const imageUrl = `https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/other/dream-world/${speciesResponse.data.id}.svg`;
         return {
           ...pokemon,
-          color, // Add color information to each Pokemon
-          images, // Add image information to each Pokemon
+          imageUrl, // Add image information to each Pokemon
         };
       }),
     );
 
-    return pokemonWithColors;
+    return pokemonWithImages;
   } catch (error) {
     console.error('Error fetching Pokemon list with colors:', error);
     throw error;
@@ -38,7 +36,14 @@ export const getPokemonList = async () => {
 export const getPokemonDetails = async (name: string) => {
   try {
     const response: PokemonDetailResponse = await client.get(`/v2/pokemon/${name}`);
-    return response.data;
+
+    return {
+      id: response.data.id,
+      height: response.data.height,
+      name: response.data.name,
+      weight: response.data.weight,
+      types: response.data.types,
+    };
   } catch (error) {
     console.error('Error fetching Pokemon details:', error);
     throw error;

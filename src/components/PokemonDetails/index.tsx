@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+
+import Box from '@mui/material/Box';
 import CloseIcon from '@mui/icons-material/Close';
 import SuccessModal from '@/components/SuccessModal';
 
@@ -15,55 +17,49 @@ const PokemonDetails: React.FC<PokemonDetailProps> = ({
   date,
   setDate,
   setNickname,
-  saveCapture,
-  setSelectedPokemon,
-  removeCapture,
+  onCapture,
+  onClose,
 }) => {
   const [errors, setErrors] = useState<PokemonDetailValidation>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const imageUrl = `https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/other/dream-world/${pokemonDetails?.id}.svg`;
-
   const validateInputs = () => {
     const newErrors: PokemonDetailValidation = {};
-
     if (!nickname) {
       newErrors.nickname = 'Nickname is required.';
     }
-
     if (!date) {
       newErrors.date = 'Date is required.';
     }
-
     setErrors(newErrors);
-
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSaveCapture = () => {
-    if (validateInputs()) {
-      setSuccessMessage(selectedPokemon + ' was successfully tag as captured!');
+  const handleCapture = (action: string) => {
+    if (action === 'SAVE') {
+      if (validateInputs()) {
+        setSuccessMessage(selectedPokemon?.name + ' was successfully tag as captured!');
+        setTimeout(() => {
+          setSuccessMessage(null);
+          onCapture(action);
+        }, 2000);
+      }
+    }
+    if (action === 'REMOVE') {
+      setSuccessMessage(selectedPokemon?.name + ' was successfully removed!');
       setTimeout(() => {
         setSuccessMessage(null);
-        saveCapture();
-      }, 3000);
+        onCapture(action);
+      }, 2000);
     }
-  };
-
-  const handleRemoveCapture = () => {
-    setSuccessMessage(selectedPokemon + ' was successfully removed!');
-    setTimeout(() => {
-      setSuccessMessage(null);
-      removeCapture();
-    }, 3000);
   };
 
   return (
     <>
       {successMessage && <SuccessModal message={successMessage} />}
 
-      <div className={clsx(styles.details)}>
-        <div
+      <Box className={clsx(styles.details)}>
+        <Box
           className={clsx(
             styles.detailsCard,
             pokemonDetails?.isCaptured
@@ -71,16 +67,13 @@ const PokemonDetails: React.FC<PokemonDetailProps> = ({
               : 'bg-gradient-to-b from-gray-600 to-yellow-200 dark:bg-gray-700 dark:to-yellow-200',
           )}
         >
-          <div className={clsx(styles.detailsTitle)}>
+          <Box className={clsx(styles.detailsTitle)}>
             <h2>{pokemonDetails?.isCaptured ? 'Captured' : 'Tag Pokemon as Captured'}</h2>
-            <CloseIcon
-              className={'dark:text-yellow-500'}
-              onClick={() => setSelectedPokemon(null)}
-            />
-          </div>
+            <CloseIcon className={'dark:text-yellow-500'} onClick={() => onClose(null)} />
+          </Box>
           {pokemonDetails && (
-            <div className={clsx(styles.detailsBody, `dark:text-gray-800`)}>
-              <img src={imageUrl} alt={pokemonDetails.name} />
+            <Box className={clsx(styles.detailsBody, `dark:text-gray-800`)}>
+              <img src={selectedPokemon?.imageUrl} alt={pokemonDetails.name} />
               <h3>{pokemonDetails.name}</h3>
               {pokemonDetails?.isCaptured && (
                 <div className="align-center flex flex-row justify-center gap-4">
@@ -104,11 +97,13 @@ const PokemonDetails: React.FC<PokemonDetailProps> = ({
                 <strong>Type:</strong>{' '}
                 {pokemonDetails.types.map((type: any) => type.type.name).join(', ')}
               </p>
-            </div>
+            </Box>
           )}
           {!pokemonDetails?.isCaptured ? (
             <>
-              <p className={`font-bold dark:text-gray-800`}>Selected Pokemon: {selectedPokemon}</p>
+              <p className={`font-bold dark:text-gray-800`}>
+                Selected Pokemon: {selectedPokemon?.name}
+              </p>
               <input
                 type="text"
                 placeholder="Nickname"
@@ -124,27 +119,27 @@ const PokemonDetails: React.FC<PokemonDetailProps> = ({
                 onChange={(e) => setDate(e.target.value)}
               />
               {errors.date && <p className={clsx(styles.error)}>{errors.date}</p>}
-              <div className={clsx(styles.detailsCardDiv)}>
+              <Box className={clsx(styles.detailsCardDiv)}>
                 <button
                   className={clsx(styles.detailsCardButtonIsCaptured)}
-                  onClick={handleSaveCapture}
+                  onClick={() => handleCapture('SAVE')}
                 >
                   Tag as Captured
                 </button>
-              </div>
+              </Box>
             </>
           ) : (
-            <div className={clsx(styles.detailsCardDiv)}>
+            <Box className={clsx(styles.detailsCardDiv)}>
               <button
                 className={clsx(styles.detailsCardButtonIsNotCaptured)}
-                onClick={handleRemoveCapture}
+                onClick={() => handleCapture('REMOVE')}
               >
                 Remove
               </button>
-            </div>
+            </Box>
           )}
-        </div>
-      </div>
+        </Box>
+      </Box>
     </>
   );
 };

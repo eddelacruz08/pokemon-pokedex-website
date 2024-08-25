@@ -3,6 +3,8 @@ import React from 'react';
 import ThemeToggle from '@/components/ThemeToggle';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import AppsIcon from '@mui/icons-material/Apps';
+import Box from '@mui/material/Box';
+
 import { PokemonHeaderProps } from '@/app/constants';
 
 import clsx from 'clsx';
@@ -17,18 +19,18 @@ const PokemonHeader: React.FC<PokemonHeaderProps> = ({
 }) => {
   return (
     <>
-      <div className={clsx(styles.titleImage)}>
+      <Box className={clsx(styles.titleImage)}>
         <img alt="pokemon" src="pokemon-23.svg" className="h-32" />
-      </div>
-      <div className={clsx(styles.title)}>
+      </Box>
+      <Box className={clsx(styles.title)}>
         <img
           src={'/pokeball.png'}
           alt={'Pokemon Ball'}
           className={clsx(styles.icon, 'dark:text-white')}
         />
         <p>Gen 1 Pokedex</p>
-      </div>
-      <div className={clsx(styles.body)}>
+      </Box>
+      <Box className={clsx(styles.body)}>
         <input
           type="text"
           placeholder="Search Pokemon..."
@@ -59,7 +61,7 @@ const PokemonHeader: React.FC<PokemonHeaderProps> = ({
           </button>
           <ThemeToggle />
         </div>
-      </div>
+      </Box>
     </>
   );
 };

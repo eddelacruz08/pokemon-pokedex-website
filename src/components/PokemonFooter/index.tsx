@@ -3,6 +3,7 @@ import React from 'react';
 import CatchingPokemonOutlinedIcon from '@mui/icons-material/CatchingPokemonOutlined';
 import EastIcon from '@mui/icons-material/East';
 import WestIcon from '@mui/icons-material/West';
+import Box from '@mui/material/Box';
 
 import { PokemonFooterProps } from '@/app/constants';
 
@@ -19,7 +20,7 @@ const PokemonFooter: React.FC<PokemonFooterProps> = ({
 }) => {
   return (
     <>
-      <div className={clsx(styles.pagination)}>
+      <Box className={clsx(styles.pagination)}>
         <button
           className={clsx(styles.paginationButton)}
           onClick={() => handlePageChange(page - 1)}
@@ -37,8 +38,8 @@ const PokemonFooter: React.FC<PokemonFooterProps> = ({
         >
           <EastIcon />
         </button>
-      </div>
-      <div className={clsx(styles.card, 'dark:bg-gray-800')}>
+      </Box>
+      <Box className={clsx(styles.card, 'dark:bg-gray-800')}>
         <button
           className={clsx(filter === 'all' ? styles.all : styles.captured)}
           onClick={() => {
@@ -58,7 +59,7 @@ const PokemonFooter: React.FC<PokemonFooterProps> = ({
           <CatchingPokemonOutlinedIcon />
           &nbsp;Captured
         </button>
-      </div>
+      </Box>
     </>
   );
 };

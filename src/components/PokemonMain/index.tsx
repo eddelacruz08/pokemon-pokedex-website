@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
+import Box from '@mui/material/Box';
+
 import PokemonCard from '@/components/PokemonCard';
 import PokemonDetails from '@/components/PokemonDetails';
 import PokemonHeader from '@/components/PokemonHeader';
@@ -22,21 +24,25 @@ const PokemonMain: React.FC = () => {
   const [capturedPokemon, setCapturedPokemon] = useState<{
     [key: string]: { when: string; nickname: string };
   }>({});
-  const [selectedPokemon, setSelectedPokemon] = useState<string | null>(null);
+  const [selectedPokemon, setSelectedPokemon] = useState<{
+    name?: string;
+    imageUrl?: string;
+  } | null>(null);
   const [pokemonDetails, setPokemonDetails] = useState<any>(null);
   const [nickname, setNickname] = useState<string>('');
   const [date, setDate] = useState<string>('');
   const [filter, setFilter] = useState<'all' | 'captured'>('all');
-  const [hasMore, setHasMore] = useState<boolean>(true);
 
   // Pagination state
   const [page, setPage] = useState<number>(1);
-  const limit = 18;
+  const limitPerPage = 18;
+  const limit = 150;
+  const offset = 0;
 
   // Fetch Pokemon list using Tanstack Query
   const { data: pokemon = [], isLoading } = useQuery<any>({
-    queryKey: ['pokemonList'],
-    queryFn: getPokemonList,
+    queryKey: ['pokemonList', limit, offset],
+    queryFn: () => getPokemonList(limit, offset),
   });
 
   const handlePageChange = (newPage: number) => {
@@ -52,8 +58,8 @@ const PokemonMain: React.FC = () => {
       results = results.filter((p: any) => capturedPokemon[p.name]);
     }
 
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
+    const startIndex = (page - 1) * limitPerPage;
+    const endIndex = page * limitPerPage;
     setFilteredPokemon(results.slice(startIndex, endIndex));
   }, [searchTerm, pokemon, filter, page, capturedPokemon]);
 
@@ -74,38 +80,32 @@ const PokemonMain: React.FC = () => {
   };
 
   const totalPages = Math.ceil(
-    filter === 'all' ? pokemon.length / limit : Object.keys(capturedPokemon).length / limit,
+    filter === 'all'
+      ? pokemon.length / limitPerPage
+      : Object.keys(capturedPokemon).length / limitPerPage,
   );
 
-  const handleCapture = async (name: string) => {
-    setSelectedPokemon(name);
+  const handleViewDetails = async (name: string, imageUrl: string) => {
+    setSelectedPokemon({ name: name, imageUrl: imageUrl });
     await fetchPokemonDetails(name);
   };
 
-  const handleViewDetails = async (name: string) => {
-    setSelectedPokemon(name);
-    await fetchPokemonDetails(name);
-  };
-
-  const saveCapture = () => {
+  const handleCaptureDetails = (action: string) => {
     if (selectedPokemon) {
-      const updatedCaptured = {
-        ...capturedPokemon,
-        [selectedPokemon]: { when: date, nickname },
-      };
-      setCapturedPokemon(updatedCaptured);
-      localStorage.setItem('capturedPokemon', JSON.stringify(updatedCaptured));
-      setSelectedPokemon(null);
-      setNickname('');
-      setDate('');
-      setPokemonDetails(null);
-    }
-  };
+      let updatedCaptured: any = {};
 
-  const removeCapture = () => {
-    if (selectedPokemon) {
-      const updatedCaptured = { ...capturedPokemon };
-      delete updatedCaptured[selectedPokemon];
+      if (action === 'SAVE') {
+        updatedCaptured = {
+          ...capturedPokemon,
+          [selectedPokemon.name || '']: { when: date, nickname },
+        };
+      }
+
+      if (action === 'REMOVE') {
+        updatedCaptured = { ...capturedPokemon };
+        delete updatedCaptured[selectedPokemon.name || ''];
+      }
+
       setCapturedPokemon(updatedCaptured);
       localStorage.setItem('capturedPokemon', JSON.stringify(updatedCaptured));
       setSelectedPokemon(null);
@@ -118,7 +118,7 @@ const PokemonMain: React.FC = () => {
   if (isLoading) return <LoadingScreen />;
 
   return (
-    <div className={clsx(styles.main)}>
+    <Box className={clsx(styles.main)}>
       <PokemonHeader
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -126,23 +126,22 @@ const PokemonMain: React.FC = () => {
         view={view}
       />
       {filteredPokemon.length !== 0 ? (
-        <div className={clsx(styles.pokemonCard, view === 'grid' ? styles.grid : '')}>
+        <Box className={clsx(styles.pokemonCard, view === 'grid' ? styles.grid : '')}>
           {filteredPokemon.map((p: any) => {
             return (
               <PokemonCard
                 key={p.name}
                 name={p.name}
-                imageUrl={p.images}
+                imageUrl={p.imageUrl}
                 view={view}
-                onCapture={() => handleCapture(p.name)}
                 isCaptured={!!capturedPokemon[p.name]}
-                onViewDetails={() => handleViewDetails(p.name)}
+                onViewDetails={() => handleViewDetails(p.name, p.imageUrl)}
               />
             );
           })}
-        </div>
+        </Box>
       ) : (
-        <div className={clsx('text-center')}>No Pokemon Data</div>
+        <Box sx={{ textAlign: 'center' }}>No Pokemon Data</Box>
       )}
 
       <PokemonFooter
@@ -161,12 +160,11 @@ const PokemonMain: React.FC = () => {
           date={date}
           setDate={setDate}
           setNickname={setNickname}
-          saveCapture={saveCapture}
-          removeCapture={removeCapture}
-          setSelectedPokemon={setSelectedPokemon}
+          onCapture={handleCaptureDetails}
+          onClose={setSelectedPokemon}
         />
       )}
-    </div>
+    </Box>
   );
 };
 

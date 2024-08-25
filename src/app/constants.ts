@@ -1,4 +1,4 @@
-export type ResultResponse = { name: string; url: string };
+export type ResultResponse = { name: string; url: string; id: number };
 
 export type SpeciesResponseProps = { data: { color: { name: string }; id: number } };
 
@@ -42,21 +42,22 @@ export type PokemonDetailProps = {
       when: string;
     };
   };
-  selectedPokemon: string;
+  selectedPokemon: {
+    name?: string;
+    imageUrl?: string;
+  };
   nickname: string;
   date: string;
   setDate: (v: any) => void;
   setNickname: (v: any) => void;
-  saveCapture: () => void;
-  setSelectedPokemon: (v: any) => void;
-  removeCapture: () => void;
+  onCapture: (v: any) => void;
+  onClose: (v: any) => void;
 };
 
 export type PokemonCardProps = {
   name: string;
   imageUrl: string;
   view: 'list' | 'grid';
-  onCapture: () => void;
   isCaptured: boolean;
   onViewDetails?: () => void;
 };

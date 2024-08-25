@@ -13,12 +13,11 @@ const PokemonCard: React.FC<PokemonCardProps> = ({
   name,
   imageUrl,
   view,
-  onCapture,
   isCaptured,
   onViewDetails,
 }) => {
   return (
-    <div
+    <Box
       onClick={isCaptured ? onViewDetails : () => {}}
       className={clsx(
         styles.card,
@@ -33,7 +32,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({
         alt={name}
         className={clsx(view === 'list' ? styles.cardImageList : styles.cardImageGrid)}
       />
-      <div>
+      <Box>
         <h3
           className={clsx(
             'dark:text-white',
@@ -49,7 +48,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({
               styles.cardButton,
               isCaptured ? styles.cardButtonIsCaptured : styles.cardButtonIsNotCaptured,
             )}
-            onClick={onCapture}
+            onClick={onViewDetails}
             disabled={isCaptured}
           >
             <Box display="flex" justifyContent="center" alignItems="center">
@@ -70,8 +69,8 @@ const PokemonCard: React.FC<PokemonCardProps> = ({
             />
           </Box>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 
