@@ -5,27 +5,31 @@ import {
   PokemonListProps,
   ResultResponse,
   SpeciesResponseProps,
-} from '@/app/constants';
+} from '@/app/types';
 
 // Fetch a list of Pokemon with a limit and offset
 export const getPokemonList = async (limit: number, offset: number) => {
   try {
-    const response: PokemonListProps = await client.get(`/v2/pokemon/?limit=${limit}&offset=??`);
-    const pokemonList = response.data.results;
+    const response: PokemonListProps = await client.get(
+      `/v2/pokemon/?limit=${limit}&offset=${offset}`,
+    );
+    const pokemonList = response.data;
 
     const pokemonWithImages = await Promise.all(
-      pokemonList.map(async (pokemon: ResultResponse) => {
+      pokemonList.results.map(async (pokemon: ResultResponse) => {
         const speciesUrl = pokemon.url.replace('/pokemon/', '/pokemon-species/');
         const speciesResponse: SpeciesResponseProps = await client.get(speciesUrl);
         const imageUrl = `https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/other/dream-world/${speciesResponse.data.id}.svg`;
+        const color = speciesResponse.data.color.name;
         return {
           ...pokemon,
-          imageUrl, // Add image information to each Pokemon
+          imageUrl, // Add image to each Pokemon
+          color, // Add color to each Pokemon
         };
       }),
     );
 
-    return pokemonWithImages;
+    return { list: pokemonWithImages, count: pokemonList.count };
   } catch (error) {
     console.error('Error fetching Pokemon list with colors:', error);
     throw error;
@@ -42,7 +46,7 @@ export const getPokemonDetails = async (name: string) => {
       height: response.data.height,
       name: response.data.name,
       weight: response.data.weight,
-      types: response.data.types,
+      types: response.data.types.map((type: any) => type.type.name),
     };
   } catch (error) {
     console.error('Error fetching Pokemon details:', error);

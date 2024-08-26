@@ -5,7 +5,7 @@ import EastIcon from '@mui/icons-material/East';
 import WestIcon from '@mui/icons-material/West';
 import Box from '@mui/material/Box';
 
-import { PokemonFooterProps } from '@/app/constants';
+import { PokemonFooterProps } from '@/app/types';
 
 import clsx from 'clsx';
 

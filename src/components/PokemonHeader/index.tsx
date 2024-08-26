@@ -5,7 +5,7 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import AppsIcon from '@mui/icons-material/Apps';
 import Box from '@mui/material/Box';
 
-import { PokemonHeaderProps } from '@/app/constants';
+import { PokemonHeaderProps } from '@/app/types';
 
 import clsx from 'clsx';
 
@@ -36,7 +36,7 @@ const PokemonHeader: React.FC<PokemonHeaderProps> = ({
           placeholder="Search Pokemon..."
           className="dark:bg-gray-800 dark:text-white"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => setSearchTerm(e)}
         />
         <div>
           <button

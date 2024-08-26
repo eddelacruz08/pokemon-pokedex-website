@@ -18,7 +18,6 @@ import clsx from 'clsx';
 import styles from '@/components/PokemonMain/PokemonMain.module.css';
 
 const PokemonMain: React.FC = () => {
-  const [filteredPokemon, setFilteredPokemon] = useState<string[]>([]);
   const [view, setView] = useState<'list' | 'grid'>('list');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [capturedPokemon, setCapturedPokemon] = useState<{
@@ -26,44 +25,28 @@ const PokemonMain: React.FC = () => {
   }>({});
   const [selectedPokemon, setSelectedPokemon] = useState<{
     name?: string;
+    color?: string;
     imageUrl?: string;
   } | null>(null);
   const [pokemonDetails, setPokemonDetails] = useState<any>(null);
   const [nickname, setNickname] = useState<string>('');
   const [date, setDate] = useState<string>('');
   const [filter, setFilter] = useState<'all' | 'captured'>('all');
-
+  const [filteredPokemonList, setFilteredPokemonList] = useState<any[]>([]);
+  const [count, setCount] = useState<number>(0);
   // Pagination state
   const [page, setPage] = useState<number>(1);
-  const limitPerPage = 18;
   const limit = 150;
-  const offset = 0;
+  const offset = (page - 1) * limit;
 
   // Fetch Pokemon list using Tanstack Query
-  const { data: pokemon = [], isLoading } = useQuery<any>({
+  const { data: pokemon = { list: [], count: 0 }, isLoading } = useQuery<any | {}>({
     queryKey: ['pokemonList', limit, offset],
     queryFn: () => getPokemonList(limit, offset),
   });
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
-
   useEffect(() => {
-    let results = pokemon.filter((p: any) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-
-    if (filter === 'captured') {
-      results = results.filter((p: any) => capturedPokemon[p.name]);
-    }
-
-    const startIndex = (page - 1) * limitPerPage;
-    const endIndex = page * limitPerPage;
-    setFilteredPokemon(results.slice(startIndex, endIndex));
-  }, [searchTerm, pokemon, filter, page, capturedPokemon]);
-
-  useEffect(() => {
+    // Restore captured Pokemon from local storage
     const storedCaptured = localStorage.getItem('capturedPokemon');
     if (storedCaptured) {
       setCapturedPokemon(JSON.parse(storedCaptured));
@@ -79,14 +62,16 @@ const PokemonMain: React.FC = () => {
     });
   };
 
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
   const totalPages = Math.ceil(
-    filter === 'all'
-      ? pokemon.length / limitPerPage
-      : Object.keys(capturedPokemon).length / limitPerPage,
+    filter === 'all' ? pokemon?.count / limit : Object.keys(capturedPokemon).length / limit,
   );
 
-  const handleViewDetails = async (name: string, imageUrl: string) => {
-    setSelectedPokemon({ name: name, imageUrl: imageUrl });
+  const handleViewDetails = async (name: string, color: string, imageUrl: string) => {
+    setSelectedPokemon({ name, color, imageUrl });
     await fetchPokemonDetails(name);
   };
 
@@ -97,7 +82,11 @@ const PokemonMain: React.FC = () => {
       if (action === 'SAVE') {
         updatedCaptured = {
           ...capturedPokemon,
-          [selectedPokemon.name || '']: { when: date, nickname },
+          [selectedPokemon.name || '']: {
+            when: date,
+            nickname,
+            imageUrl: selectedPokemon.imageUrl,
+          },
         };
       }
 
@@ -115,30 +104,66 @@ const PokemonMain: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    let filteredList = [];
+
+    // Filter based on 'all' or 'captured'
+    if (filter === 'captured') {
+      filteredList = Object.keys(capturedPokemon).map((name) => {
+        const capturedDetail: any = capturedPokemon[name];
+        return {
+          name,
+          color: capturedDetail.color,
+          imageUrl: capturedDetail.imageUrl,
+        };
+      });
+    } else {
+      filteredList = pokemon?.list?.filter((p: any) => {
+        return filter === 'all' || !!capturedPokemon[p.name];
+      });
+    }
+
+    // Apply search term filter
+    if (searchTerm) {
+      filteredList = filteredList.filter((p: any) =>
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+    }
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    setFilteredPokemonList(
+      filter === 'all' ? filteredList : filteredList?.slice(startIndex, endIndex),
+    );
+  }, [filter, searchTerm, capturedPokemon, pokemon?.list]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
   if (isLoading) return <LoadingScreen />;
 
   return (
     <Box className={clsx(styles.main)}>
       <PokemonHeader
         searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
+        setSearchTerm={handleSearchChange}
         setView={setView}
         view={view}
       />
-      {filteredPokemon.length !== 0 ? (
+      {filteredPokemonList?.length !== 0 ? (
         <Box className={clsx(styles.pokemonCard, view === 'grid' ? styles.grid : '')}>
-          {filteredPokemon.map((p: any) => {
-            return (
-              <PokemonCard
-                key={p.name}
-                name={p.name}
-                imageUrl={p.imageUrl}
-                view={view}
-                isCaptured={!!capturedPokemon[p.name]}
-                onViewDetails={() => handleViewDetails(p.name, p.imageUrl)}
-              />
-            );
-          })}
+          {filteredPokemonList?.map((p: any) => (
+            <PokemonCard
+              key={p.name}
+              name={p.name}
+              color={p.color}
+              imageUrl={p.imageUrl}
+              view={view}
+              isCaptured={!!capturedPokemon[p.name]}
+              onViewDetails={() => handleViewDetails(p.name, p.color, p.imageUrl)}
+            />
+          ))}
         </Box>
       ) : (
         <Box sx={{ textAlign: 'center' }}>No Pokemon Data</Box>
@@ -161,7 +186,7 @@ const PokemonMain: React.FC = () => {
           setDate={setDate}
           setNickname={setNickname}
           onCapture={handleCaptureDetails}
-          onClose={setSelectedPokemon}
+          onClose={() => setSelectedPokemon(null)}
         />
       )}
     </Box>

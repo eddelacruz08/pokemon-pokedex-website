@@ -1,8 +1,6 @@
 import React from 'react';
 
-import CatchingPokemonOutlinedIcon from '@mui/icons-material/CatchingPokemonOutlined';
-
-import { PokemonCardProps } from '@/app/constants';
+import { PokemonCardProps } from '@/app/types';
 
 import clsx from 'clsx';
 

@@ -26,57 +26,16 @@
   border-radius: 23px;
 }
 
-.detailsCard p {
-  margin-bottom: 0.5rem /* 8px */;
-  text-transform: capitalize;
-}
-
-.detailsCard input {
-  margin-bottom: 0.5rem /* 8px */;
-  width: 100%;
-  border-radius: 0.375rem /* 6px */;
-  border-width: 1px;
-  padding: 0.5rem /* 8px */;
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity)) /* #000000 */;
-  --tw-border-opacity: 1;
-  border-color: rgb(234 179 8 / var(--tw-border-opacity)) /* #eab308 */;
-}
-
 .detailsCardDiv {
   display: flex;
   justify-content: flex-end;
-}
-
-.detailsCardButtonIsCaptured {
-  border-radius: 0.375rem /* 6px */;
-  --tw-bg-opacity: 1;
-  background-color: rgb(234 179 8 / var(--tw-bg-opacity)) /* #eab308 */;
-  padding-left: 1rem /* 16px */;
-  padding-right: 1rem /* 16px */;
-  padding-top: 0.5rem /* 8px */;
-  padding-bottom: 0.5rem /* 8px */;
-  --tw-text-opacity: 1;
-  color: rgb(31 41 55 / var(--tw-text-opacity)) /* #1f2937 */;
-}
-
-.detailsCardButtonIsNotCaptured {
-  border-radius: 0.375rem /* 6px */;
-  --tw-bg-opacity: 1;
-  background-color: rgb(239 68 68 / var(--tw-bg-opacity)) /* #ef4444 */;
-  padding-left: 1rem /* 16px */;
-  padding-right: 1rem /* 16px */;
-  padding-top: 0.5rem /* 8px */;
-  padding-bottom: 0.5rem /* 8px */;
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity)) /* #ffffff */;
 }
 
 .detailsTitle {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: end;
   margin-bottom: 1rem /* 16px */;
 }
 
@@ -99,6 +58,8 @@
 
 .detailsBody {
   margin-bottom: 1rem /* 16px */;
+  --tw-text-opacity: 1;
+  color: rgb(31 41 55 / var(--tw-text-opacity)) /* #1f2937 */;
 }
 
 .detailsBody img {
@@ -109,17 +70,17 @@
   border-radius: 0.5rem /* 8px */;
 }
 
-.detailsBody h3 {
-  text-align: center;
-  font-size: 1.125rem /* 18px */;
-  line-height: 1.75rem /* 28px */;
-  font-weight: 900;
-  text-transform: capitalize;
+.cardTransparent {
+  background-color: rgba(255, 255, 255, 0.1); /* Transparent white background */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow for a card effect */
+  width: 100%;
 }
 
-.error {
-  font-size: 0.875rem /* 14px */;
-  line-height: 1.25rem /* 20px */;
+.icon {
+  font-size: 8rem /* 128px */;
+  line-height: 1;
   --tw-text-opacity: 1;
-  color: rgb(239 68 68 / var(--tw-text-opacity)) /* #ef4444 */;
+  height: 25px;
+  color: rgb(31 41 55 / var(--tw-text-opacity)) /* #1f2937 */;
 }
